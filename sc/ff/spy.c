@@ -13,6 +13,8 @@
 #include <stdint.h>
 #include "../cacheutils.h"
 
+#define MMAP_LEN        64 * 1024 * 1024
+
 size_t start = 0;
 size_t keystate = 0;
 size_t kpause = 0;
@@ -45,15 +47,15 @@ int main(int argc, char** argv)
   int fd = open(name,O_RDONLY);
   if (fd < 3)
     return 2;
-  unsigned char* addr = (unsigned char*)mmap(0, 64*1024*1024, PROT_READ, MAP_SHARED, fd, 0);
-  if (addr == (void*)-1)
+  unsigned char *addr = (unsigned char *) mmap(0, MMAP_LEN, PROT_READ,
+                                               MAP_SHARED, fd, 0);
+  if (offset > MMAP_LEN || addr == (void*)-1)
     return 3;
   start = rdtsc();
   while(1)
   {
     flushandreload(addr + offset);
-    for (int i = 0; i < 30; ++i)
-      sched_yield();
+    delayloop(2000U);
   }
   return 0;
 }

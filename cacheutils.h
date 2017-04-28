@@ -83,4 +83,9 @@ void longnop()
                 "nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n"
                 "nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
 }
+
+void delayloop(uint32_t cycles) {
+  uint64_t start = rdtscp64();
+  while ((rdtscp64()-start) < cycles);
+}
 #endif
