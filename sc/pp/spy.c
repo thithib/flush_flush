@@ -106,7 +106,7 @@ void pick(volatile uint64_t** addrs, int step)
 
 size_t rev = 0;
 size_t kcount = 0;
-void flushandreload(void* addr)
+void flushandreload(void)
 {
 size_t time,delta;
 if (rev == 0)
@@ -169,8 +169,8 @@ int main(int argc, char** argv)
   unsigned char* addr = (unsigned char*)mmap(0, 64*1024*1024, PROT_READ, MAP_SHARED, fd, 0);
   if (addr == (void*)-1)
     return 3;
-  faddrs[0] = (uint64_t*) addr;
-  maccess(addr);
+  faddrs[0] = (uint64_t *) (addr + offset);
+  maccess(addr + offset);
   printf("init\n");
   for (size_t i = 0; i < 64*1024*1024; ++i)
     eviction[i] = i;
@@ -184,7 +184,7 @@ int main(int argc, char** argv)
   start = rdtsc();
   while(1)
   {
-    flushandreload(addr + offset);
+    flushandreload();
     for (int i = 0; i < 3000; ++i)
       sched_yield();
   }
